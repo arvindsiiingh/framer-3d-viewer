@@ -15,15 +15,15 @@ const width = window.innerWidth;
 const height = window.innerHeight;
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x111111);
+scene.background = null;
 
 const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 1000);
 camera.position.set(2, 2, 2);
 
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
 renderer.setSize(width, height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.setClearColor(0x111111);
+renderer.setClearColor(0x000000, 0);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1;
