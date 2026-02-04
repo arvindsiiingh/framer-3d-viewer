@@ -11,11 +11,7 @@ import { GLTFLoader } from "https://esm.sh/three@0.169.0/examples/jsm/loaders/GL
 const GLB_PATH = "/bag.glb";
 const MODEL_SCALE = 2.5;
 
-// Auto-pan (subtle left/right drift when idle; user can still orbit/pan)
-const AUTO_PAN_ENABLED = true;
-const AUTO_PAN_AMPLITUDE = 0.25; // world units (medium)
-const AUTO_PAN_SPEED = 0.6; // radians/sec
-const AUTO_PAN_AXIS = new THREE.Vector3(1, 0, 0); // left/right
+// Auto-pan settings removed in favor of controls.autoRotate
 
 const canvas = document.getElementById("canvas");
 const width = window.innerWidth;
@@ -43,21 +39,7 @@ controls.enableZoom = false;
 controls.minDistance = 0.5;
 controls.maxDistance = 50;
 
-let baselineCameraPos = null;
-let baselineTarget = null;
-let isUserInteracting = false;
-const t0 = performance.now();
 
-controls.addEventListener("start", () => {
-  isUserInteracting = true;
-});
-
-controls.addEventListener("end", () => {
-  isUserInteracting = false;
-  // Resume drift from wherever the user left the camera/target.
-  baselineCameraPos = camera.position.clone();
-  baselineTarget = controls.target.clone();
-});
 
 // Lighting
 const ambient = new THREE.AmbientLight(0xffffff, 0.5);
@@ -87,9 +69,7 @@ loader.load(
     camera.lookAt(0, 0, 0);
     controls.update();
 
-    // Establish baseline for auto-pan after initial framing.
-    baselineCameraPos = camera.position.clone();
-    baselineTarget = controls.target.clone();
+
   },
   undefined,
   (err) => console.error("GLB load error:", err)
@@ -106,13 +86,9 @@ function resize() {
 function animate() {
   requestAnimationFrame(animate);
 
-  if (AUTO_PAN_ENABLED && baselineCameraPos && baselineTarget && !isUserInteracting) {
-    const phase = ((performance.now() - t0) / 1000) * AUTO_PAN_SPEED;
-    const offset = AUTO_PAN_AXIS.clone().multiplyScalar(Math.sin(phase) * AUTO_PAN_AMPLITUDE);
-
-    camera.position.copy(baselineCameraPos).add(offset);
-    controls.target.copy(baselineTarget).add(offset);
-  }
+  // Auto-rotate around the center
+  controls.autoRotate = true;
+  controls.autoRotateSpeed = 2.0; // adjust as needed
 
   controls.update();
   renderer.render(scene, camera);
