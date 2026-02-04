@@ -9,7 +9,9 @@ import { OrbitControls } from "https://esm.sh/three@0.169.0/examples/jsm/control
 import { GLTFLoader } from "https://esm.sh/three@0.169.0/examples/jsm/loaders/GLTFLoader.js";
 
 const GLB_PATH = "/bag.glb";
-const MODEL_SCALE = 2.5;
+const MODEL_SCALE = 3.5;
+
+// Auto-pan settings removed in favor of controls.autoRotate
 
 const canvas = document.getElementById("canvas");
 const width = window.innerWidth;
@@ -33,8 +35,11 @@ const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
 controls.screenSpacePanning = true;
+controls.enableZoom = false;
 controls.minDistance = 0.5;
 controls.maxDistance = 50;
+
+
 
 // Lighting
 const ambient = new THREE.AmbientLight(0xffffff, 0.5);
@@ -59,10 +64,12 @@ loader.load(
     const size = box.getSize(new THREE.Vector3());
     model.position.sub(center);
     const maxDim = Math.max(size.x, size.y, size.z);
-    const dist = maxDim * 1.5;
+    const dist = maxDim * 1.2;
     camera.position.set(dist, dist * 0.8, dist);
     camera.lookAt(0, 0, 0);
     controls.update();
+
+
   },
   undefined,
   (err) => console.error("GLB load error:", err)
@@ -78,6 +85,11 @@ function resize() {
 
 function animate() {
   requestAnimationFrame(animate);
+
+  // Auto-rotate around the center
+  controls.autoRotate = true;
+  controls.autoRotateSpeed = 2.0; // adjust as needed
+
   controls.update();
   renderer.render(scene, camera);
 }
